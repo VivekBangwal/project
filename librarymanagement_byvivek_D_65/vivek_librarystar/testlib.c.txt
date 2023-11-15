@@ -1,0 +1,37 @@
+#include "ThreadLibrary.h"
+
+void g() {
+    int i = 0;
+    while (i > -1) {
+        printf("In g(%d):\n", i++);
+    }
+    return;
+}
+
+void f() {
+    printf("In f\n");
+    int i = 0;
+    char a[100] = "a";
+    strcat(a, "a");
+    strcat(a, "a");
+    strcat(a, "a");
+    printf("%s\n", a);
+    while (i > -1) {
+        printf("In f(%d):\n", i++);
+    }
+    return;
+}
+
+int main() {
+    printf("In Main:\n");
+    int tid, tid2;
+    tid = create(f);
+    tid2 = create(g);
+    printf("\nThread created with id = %d\n", tid);
+
+    start();
+    run(tid);
+    run(tid2);
+    
+    return 0;
+}

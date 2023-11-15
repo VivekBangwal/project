@@ -1,0 +1,56 @@
+#ifndef MYTHREAD_H
+#define MYTHREAD_H
+
+#include <setjmp.h>
+#include <time.h>
+
+#define MAXTHREADS 100
+
+typedef void *(*ThreadFunctionWithArgs)(void *);
+
+enum ThreadStates { DEAD = 0, RUNNING, READY, SLEEPING, SUSPENDED, NEW };
+enum Boolean { FALSE = 0, TRUE };
+enum ThreadType { WITH_ARG = 0, NO_ARG };
+
+struct ThreadStatistics {
+    int ID;
+    enum ThreadStates state;
+    int burst;
+    int total_exec_time;
+    int total_slp_time;
+    float avg_time_quant;
+    float avg_wait_time;
+    int RedTimeTotal;
+    clock_t RunTimeStart;
+    clock_t RedTimeStart;
+};
+
+typedef struct ThreadControlBlock {
+    jmp_buf env;
+    char stack[4096];
+    struct ThreadStatistics stat;
+    enum ThreadType tType;
+    void (*f1)(void);
+    ThreadFunctionWithArgs f2;
+    void *args;
+    void *retVal;
+} TCB;
+
+int create(void (*f)(void));
+int createWithArgs(ThreadFunctionWithArgs f, void *arg);
+int getID(void);
+void dispatch(int sig);
+void start(void);
+void run(int threadID);
+void suspend(int threadID);
+void resume(int threadID);
+void yield(void);
+void initStatistics(struct ThreadStatistics *stat, int id);
+void deleteThread(int threadID);
+void sleep1(int sec);
+struct ThreadStatistics *getStatus(int threadID);
+void clean(void);
+void JOIN(int threadID);
+void *GetThreadResult(int threadID);
+
+#endif
